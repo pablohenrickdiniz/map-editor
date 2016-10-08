@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Map Editor</title>
+    <link rel="stylesheet" href="../src/css/style.css">
+    <link rel="stylesheet" href="../src/css/dark.css">
+    <!-- canvas engine-->
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
+
+
+    <!-- grid-->
+    <script type="text/javascript" src="../plugins/canvas-engine-grid/src/AbstractGrid.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine-grid/src/RectSet.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine-grid/src/Grid.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine-grid/src/GridLayer.js"></script>
+
+
+    <script type="text/javascript" src="../plugins/store-js/store.js"></script>
+    <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
+    <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
+    <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
+
+
+    <script type="text/javascript" src="../plugins/canvas-engine-grid/src/CanvasEngineGrid.js"></script>
+    <script type="text/javascript" src="../src/js/Tile.js"></script>
+    <script type="text/javascript" src="../src/js/SpritesetMap.js"></script>
+    <script type="text/javascript" src="../plugins/rpg-engine/src/Loader/GlobalProgress.js"></script>
+    <script type="text/javascript" src="../plugins/rpg-engine/src/Loader/ImageLoader.js"></script>
+    <script type="text/javascript" src="../src/js/editor-utils.js"></script>
+    <script type="text/javascript" src="../src/js/map-editor.js"></script>
+    <script type="text/javascript">
+        function start(){
+            var editor = new MapEditor();
+            var tileset_input = document.getElementById('tileset-image');
+            var map_width_input = document.getElementById('map-width');
+            var map_height_input =  document.getElementById('map-height');
+            var tileset_rows = document.getElementById('tileset-rows');
+            var tileset_cols = document.getElementById('tileset-cols');
+            var camada = document.getElementById('camada');
+            var export_button = document.getElementById('export');
+            var pencil_radio = document.getElementById('pencil-radio');
+            var eraser_radio = document.getElementById('eraser-radio');
+            var eyedropper_radio = document.getElementById('eyedropper-radio');
+            var colision_radio = document.getElementById('colision-radio');
+            var map_radio= document.getElementById('map-radio');
+            var save_button = document.getElementById('save');
+            var grid_checkbox = document.getElementById('show-grid');
+            var layer_checkbox =document.getElementById('show-layers');
+
+            editor.setEyedropperRadio(eyedropper_radio);
+            editor.setPencilRadio(pencil_radio);
+            editor.setEraserRadio(eraser_radio);
+            editor.setExportButton(export_button);
+            editor.setTilesetImageInput(tileset_input);
+            editor.setMapWidthInput(map_width_input);
+            editor.setMapHeightInput(map_height_input);
+            editor.setTilesetRowsInput(tileset_rows);
+            editor.setTilesetColsInput(tileset_cols);
+            editor.setLayerInput(camada);
+            editor.setColisionRadio(colision_radio);
+            editor.setMapRadio(map_radio);
+            editor.setSaveButton(save_button);
+            editor.setLayerCheckbox(layer_checkbox);
+            editor.setGridCheckbox(grid_checkbox);
+            editor.initialize();
+        }
+    </script>
+</head>
+<body onload="start();">
+    <div class="tool-box">
+        <div class="header">
+            <h4>Ferramentas</h4>
+        </div>
+        <div class="tool-content">
+            <input type="radio" id="pencil-radio" name="tool" value="pencil" checked>
+            <label for="pencil-radio">lápis</label>
+            <input type="radio" id="eraser-radio" name="tool" value="eraser">
+            <label for="eraser-radio">borracha</label>
+            <input type="radio" id="eyedropper-radio" name="tool" value="eyedropper">
+            <label for="eyedropper-radio">Copiar</label>
+        </div>
+    </div>
+    <div class="tool-box">
+        <div class="header">
+            <h4>Ações</h4>
+        </div>
+        <div class="tool-content">
+            <button id="export">Exportar</button>
+            <button id="save">Salvar</button>
+        </div>
+    </div>
+    <div class="tool-box">
+        <div class="header">
+            <h4>Modo</h4>
+        </div>
+        <div class="tool-content">
+            <input type="radio" id="colision-radio" name="mode" value="colision">
+            <label for="pencil-radio">colisão</label>
+            <input type="radio" id="map-radio" name="mode" value="map" checked>
+            <label for="eraser-radio">mapa</label>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="tool-box">
+        <div class="header">
+            <h4>Mapa</h4>
+        </div>
+        <div class="tool-content">
+            <div id="canvas-map"></div>
+        </div>
+        <div class="tool-footer">
+            <div class="header">
+                <h4>Edição de Mapa</h4>
+            </div>
+            <div class="input-group">
+                <label for="">largura</label>
+                <input type="number" min="5" max="500" value="5" id="map-width">
+            </div>
+            <div class="input-group">
+                <label for="">altura</label>
+                <input type="number" min="5" max="500" value="5" id="map-height">
+            </div>
+            <div class="input-group">
+                <label for="">camada</label>
+                <select  id="camada" value="1">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="">Mostrar Camadas</label>
+                <input type="checkbox" id="show-layers">
+            </div>
+            <div class="input-group">
+                <label for="">Mostrar Grade</label>
+                <input type="checkbox" checked id="show-grid">
+            </div>
+        </div>
+    </div>
+    <div class="tool-box">
+        <div class="header">
+            <h4>Tileset</h4>
+        </div>
+        <div class="tool-content">
+            <div id="tileset"></div>
+        </div>
+        <div class="tool-footer">
+            <div class="header">
+                <h4>Edição de Tileset</h4>
+            </div>
+            <div class="input-group">
+                <label for="">linhas</label>
+                <input type="number" min="1" max="1000" value="1" id="tileset-rows">
+            </div>
+            <div class="input-group">
+                <label for="">colunas</label>
+                <input type="number" min="1" max="1000" value="1" id="tileset-cols">
+            </div>
+            <input type="file" id="tileset-image">
+        </div>
+    </div>
+</body>
+</html>

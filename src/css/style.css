@@ -1,0 +1,42 @@
+#canvas-map,#tileset{
+    display: inline-block;
+    float:left;
+    border: 1px solid gray;
+    box-sizing: border-box;
+}
+
+#canvas-map{
+    background-color: white;
+}
+
+#map-tools{
+    width:500px;
+    float:left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+#tileset-tools{
+    width:500px;
+    float:left;
+    margin-top: 5px;
+}
+
+.clearfix{
+    clear:left;
+}
+
+#tileset-image{
+    display: inline-block;
+    width:230px;
+}
+
+body{
+    font-family: Helvetica,Verdana;
+}
+
+#actions{
+    display: inline-block;
+}
