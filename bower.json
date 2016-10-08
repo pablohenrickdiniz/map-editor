@@ -16,7 +16,6 @@
   ],
   "dependencies": {
     "canvas-engine-grid": "git@github.com:pablohenrickdiniz/canvas-engine-grid.git",
-    "Color": "git@github.com:pablohenrickdiniz/color.git",
     "canvas-engine": "git@github.com:pablohenrickdiniz/canvas-engine.git",
     "math-lib": "git@github.com:pablohenrickdiniz/math-lib.git",
     "Mouse": "git@github.com:pablohenrickdiniz/Mouse.git",
