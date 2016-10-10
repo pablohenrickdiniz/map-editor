@@ -129,6 +129,7 @@ body{
 
 .tool-box .tool-content{
     display: inline-block;
+    position: relative;
 }
 
 .tool-box .header h4{
