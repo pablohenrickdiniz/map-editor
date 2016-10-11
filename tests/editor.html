@@ -33,7 +33,6 @@
     <script type="text/javascript" src="../src/js/map-editor.js"></script>
     <script type="text/javascript">
         function start(){
-            var editor = new MapEditor();
             var tileset_input = document.getElementById('tileset-image');
             var map_width_input = document.getElementById('map-width');
             var map_height_input =  document.getElementById('map-height');
@@ -50,22 +49,22 @@
             var grid_checkbox = document.getElementById('show-grid');
             var layer_checkbox =document.getElementById('show-layers');
 
-            editor.setEyedropperRadio(eyedropper_radio);
-            editor.setPencilRadio(pencil_radio);
-            editor.setEraserRadio(eraser_radio);
-            editor.setExportButton(export_button);
-            editor.setTilesetImageInput(tileset_input);
-            editor.setMapWidthInput(map_width_input);
-            editor.setMapHeightInput(map_height_input);
-            editor.setTilesetRowsInput(tileset_rows);
-            editor.setTilesetColsInput(tileset_cols);
-            editor.setLayerInput(camada);
-            editor.setcollisionRadio(collision_radio);
-            editor.setMapRadio(map_radio);
-            editor.setSaveButton(save_button);
-            editor.setLayerCheckbox(layer_checkbox);
-            editor.setGridCheckbox(grid_checkbox);
-            editor.initialize();
+            MapEditor.setEyedropperRadio(eyedropper_radio);
+            MapEditor.setPencilRadio(pencil_radio);
+            MapEditor.setEraserRadio(eraser_radio);
+            MapEditor.setExportButton(export_button);
+            MapEditor.setTilesetImageInput(tileset_input);
+            MapEditor.setMapWidthInput(map_width_input);
+            MapEditor.setMapHeightInput(map_height_input);
+            MapEditor.setTilesetRowsInput(tileset_rows);
+            MapEditor.setTilesetColsInput(tileset_cols);
+            MapEditor.setLayerInput(camada);
+            MapEditor.setcollisionRadio(collision_radio);
+            MapEditor.setMapRadio(map_radio);
+            MapEditor.setSaveButton(save_button);
+            MapEditor.setLayerCheckbox(layer_checkbox);
+            MapEditor.setGridCheckbox(grid_checkbox);
+            MapEditor.initialize();
         }
     </script>
 </head>
