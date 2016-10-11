@@ -6,36 +6,35 @@
      */
     var Tile = function (options) {
         var self = this;
+        initialize(self);
         options = options || {};
-        self.image = options.image || '';
-        self.sx = options.sx || 0;
-        self.sy = options.sy || 0;
-        self.width = options.width || 0;
-        self.height = options.height || 0;
-        self.parent = options.parent || null;
+        self.i = options.i || 0;
+        self.j = options.j || 0;
+        self.tileset = options.tileset || null;
     };
 
     /**
      *
-     * @param x
-     * @param y
-     * @returns {{dx: (*|number), dy: (*|number), sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (options.width|*|number), sHeight: (options.height|*|number), dWidth: *, dHeight: *}}
-     */
-    Tile.prototype.getBounds = function (x,y) {
-        var self = this;
-        var bounds = self.toJSON();
-        bounds.dx = x = x || 0;
-        bounds.dy = y = y || 0;
-        return bounds;
-    };
-
-    /**
-     *
-     * @returns {{sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (options.width|*|number), sHeight: (options.height|*|number), dWidth: *, dHeight: *}}
+     * @returns {*[]}
      */
     Tile.prototype.toJSON = function(){
         var self = this;
+        return [
+            self.tileset?self.tileset.id:null, //tileset
+            self.i,                            //sx
+            self.j                             //sy
+        ];
+    };
+
+
+    /**
+     *
+     * @returns {{tileset: (options.id|*|id|SpritesetMap.tilesets.id|Tileset.id|Section.id), sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (options.width|*|number), sHeight: (options.height|*|number), dWidth: *, dHeight: *}}
+     */
+    Tile.prototype.toOBJ = function(){
+        var self = this;
         return {
+            tileset:self.tileset?self.tileset.id:null,
             sx:self.sx,
             sy:self.sy,
             sWidth:self.width,
@@ -43,6 +42,32 @@
             dWidth:self.width,
             dHeight:self.height
         };
+    };
+
+    var initialize = function(self){
+        Object.defineProperty(self,'sx',{
+            get:function(){
+                return self.j*self.tileset.tileWidth;
+            }
+        });
+
+        Object.defineProperty(self,'sy',{
+            get:function(){
+                return self.i*self.tileset.tileHeight;
+            }
+        });
+
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return self.tileset.tileWidth;
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return self.tileset.tileHeight;
+            }
+        });
     };
 
 
