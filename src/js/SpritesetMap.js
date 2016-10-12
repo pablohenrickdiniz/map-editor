@@ -12,8 +12,8 @@
         self.height = options.height || 20;
         self.tileWidth = options.tileWidth || 32;
         self.tileHeight = options.tileHeight || 32;
-        self.sprites = [];
-        self.tilesets = [];
+        self.sprites =  options.sprites || [];
+        self.tilesets = options.tilesets || [];
     };
 
 
@@ -129,7 +129,51 @@
         ];
     };
 
+    SpritesetMap.fromJSON = function(json){
+        var tilesets = json[0];
+        var length = tilesets.length;
+        var tileset;
+        var i;
+        var j;
+        var k;
+        var tile;
 
+        for(i =0; i < length;i++){
+            tileset = Tileset.fromJSON(tilesets[i]);
+            tileset.id = i;
+            tilesets[i] = tileset;
+        }
+
+        var sprites = json[1];
+        var width = parseFloat(json[2]);
+        var height = parseFloat(json[3]);
+        var tileWidth = parseFloat(json[4]);
+        var tileHeight = parseFloat(json[5]);
+
+
+        var map = new SpritesetMap({
+            tilesets:tilesets,
+            width:width,
+            height:height,
+            tileWidth:tileWidth,
+            tileHeight:tileHeight
+        });
+
+        for(i in sprites){
+            for(j in sprites[i]){
+                for(k in sprites[i][j]){
+                    var s = sprites[i][j][k];
+                    if(s != 0){
+                        tileset = tilesets[s[0]];
+                        tile = tileset.get(s[1],s[2]);
+                        map.set(i,j,k,tile);
+                    }
+                }
+            }
+        }
+
+        return map;
+    };
 
     root.SpritesetMap = SpritesetMap;
 })(window);

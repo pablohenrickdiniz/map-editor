@@ -150,6 +150,34 @@
         });
     };
 
+    Tileset.fromJSON = function(json){
+        var image_data = json[0];
+        var rows = parseInt(json[1]);
+        var cols = parseInt(json[2]);
+        var width = parseFloat(json[3]);
+        var height = parseFloat(json[4]);
+
+        var image = new Image();
+        image.src = image_data;
+
+        var tileset = new Tileset({
+            image:image,
+            rows:rows,
+            cols:cols,
+            width:width,
+            height:height
+        });
+
+        var collision = json[5];
+        var length = collision.length;
+        for(var i =0; i < length;i++){
+            var c = collision[i];
+            tileset.setCollision(parseInt(c[0]),parseInt(c[1]),true);
+        }
+
+        return tileset;
+    };
+
 
     function collisiontoJSON(collision){
         var c = [];

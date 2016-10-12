@@ -64,14 +64,14 @@
     var map_radio = null;
     var layer_checkbox = null;
     var grid_checkbox = null;
+    var currentTileset = null;
 
 
     var MapEditor = {
         initialize: function () {
-            var self = this;
-            initialize_tileset(self);
-            initialize_map(self);
-            initialize_collision_layer(self);
+            initialize_tileset();
+            initialize_map();
+            initialize_collision_layer();
         },
         setExportButton: function (button) {
             if (button.tagName == 'BUTTON') {
@@ -213,7 +213,9 @@
     initialize(MapEditor);
 
     function save_callback() {
-
+        if(store.enabled){
+            store.set('map',JSON.stringify(map,json_replace));
+        }
     }
 
     function grid_checkbox_callback() {
@@ -329,7 +331,7 @@
                     });
                     self.map.addTileset(tileset);
                 }
-                self.currentTileset = tileset;
+                currentTileset = tileset;
                 load_tileset_canvas(self);
                 changeRows(rows);
                 changeCols(cols);
@@ -342,7 +344,7 @@
      * @param editor
      */
     function load_tileset_canvas(editor) {
-        var tileset = editor.currentTileset;
+        var tileset = currentTileset;
         var img = tileset.image;
         var cols = tileset.cols;
         var rows = tileset.rows;
@@ -377,85 +379,6 @@
 
     /**
      *
-     * @param data
-     * @returns {Window.SpritesetMap}
-     */
-    function parseMap(data) {
-        var tileWidth = data.tileWidth || 32;
-        var tileHeight = data.tileHeight || 32;
-        var spriteset_map = new SpritesetMap({
-            tileWidth: tileWidth,
-            tileHeight: tileHeight
-        });
-
-        var tilesets = data.tilesets || [];
-        var sprites = data.sprites || [];
-        var tile_fields = [
-            'image',
-            'dWidth',
-            'dHeight',
-            'sWidth',
-            'sHeight',
-            'sx',
-            'sy',
-            'dx',
-            'dy',
-            'layer'
-        ];
-
-        ImageLoader.loadAll(tilesets, 0, function (tilesets) {
-            for (var i in sprites) {
-                for (var j in sprites[i]) {
-                    for (var k in sprites[i][j]) {
-                        var tile = sprites[i][j][k];
-                        if (tile) {
-                            var newtile = {};
-                            tile_fields.forEach(function (name, index) {
-                                if (tile[index] !== undefined) {
-                                    newtile[name] = tile[index];
-                                }
-                            });
-
-                            spriteset_map.set(i, j, k, newtile);
-                        }
-                        else {
-                            spriteset_map.unset(i, j, k);
-                        }
-                    }
-                }
-            }
-        });
-        return spriteset_map;
-    };
-
-    /**
-     *
-     * @param spriteset_map
-     */
-    function loadMap(spriteset_map) {
-        MapEditor.mapWidth = spriteset_map.width;
-        MapEditor.mapHeight = spriteset_map.height;
-        getTilesetCanvas().getGridLayer().refresh();
-    }
-
-    /**
-     *
-     * @param img_url_data
-     * @param tilesets
-     * @returns {number}
-     */
-    function find_tileset_by_image(img_url_data, tilesets) {
-        var length = tilesets.length;
-        for (var i = 0; i < length; i++) {
-            if (tilesets[i].data == img_url_data) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     *
      * @param key
      * @param value
      * @returns {*}
@@ -475,7 +398,7 @@
     function changeRows(rows) {
         var self = MapEditor;
         var image = null;
-        var tileset = self.currentTileset;
+        var tileset = currentTileset;
         if (tileset != null) {
             tileset.rows = rows;
             image = tileset.image;
@@ -503,7 +426,7 @@
     function changeCols(val) {
         var self = MapEditor;
         var image = null;
-        var tileset = self.currentTileset;
+        var tileset = currentTileset;
         if (tileset != null) {
             image = tileset.image;
             tileset.cols = val;
@@ -526,7 +449,7 @@
 
 
     function export_raw() {
-        var string = JSON.stringify(map.toJSON(), json_replace);
+        var string = JSON.stringify(map, json_replace);
         var blob = new Blob([string], {type: "application/json"});
         console.log(blob);
 
@@ -559,7 +482,7 @@
 
 
             reader.addEventListener('mousedown', function (x, y) {
-                if (reader.left && self.currentTileset != null) {
+                if (reader.left && currentTileset != null) {
                     var mapCanvas = getMapCanvas();
                     var map = self.map;
                     var pos = get_position(mapCanvas, {x: x, y: y});
@@ -621,7 +544,7 @@
 
                 var element = document.getElementById('mouse');
                 element.innerHTML = x + ',' + y;
-                if (MapEditor.currentTileset != null) {
+                if (currentTileset != null) {
                     /*end hover square*/
                     switch (mode) {
                         case 'map':
@@ -685,7 +608,7 @@
         var canvasMap = getMapCanvas();
         var x = j * map.tileWidth + canvasMap.viewX;
         var y = i * map.tileHeight + canvasMap.viewY;
-        var tileset = MapEditor.currentTileset;
+        var tileset = currentTileset;
 
         var tile = tileset.get(row, col);
         var tile_data = Object.assign({
@@ -701,7 +624,7 @@
 
 
     function drawTile() {
-        if (selectedInterval !== null && MapEditor.currentTileset != null) {
+        if (selectedInterval !== null && currentTileset != null) {
             var mc = getMapCanvas();
             var interval = selectedInterval;
             var area = mc.getDrawedArea();
@@ -772,7 +695,7 @@
                     var rect = grid.get(i, j);
                     if (rect != null) {
                         rect.state = !rect.state;
-                        var tileset = self.currentTileset;
+                        var tileset = currentTileset;
                         tileset.setCollision(i, j, rect.state);
                         collisionLayer.refresh();
                     }
@@ -780,7 +703,7 @@
             });
 
             tilesetCanvas.addEventListener('viewChange', function (x, y) {
-                var tileset = MapEditor.currentTileset;
+                var tileset = currentTileset;
                 tilesetLayer.clear();
                 tilesetLayer.drawImage(tileset.image, x, y);
                 collisionLayer.refresh();
@@ -837,7 +760,6 @@
     }
 
     function showGrid() {
-        var self = this;
         var layer = getMapCanvas().getGridLayer();
         layer.opacity = 0.5;
     }
@@ -856,6 +778,7 @@
             set: function (w) {
                 if (w != mapWidth) {
                     mapWidth = w;
+                    map_width_input.value = w;
                     var map = self.map;
                     map.width = w;
                     var mapCanvas = getMapCanvas();
@@ -876,6 +799,7 @@
                 if (h != mapHeight) {
                     var map = self.map;
                     mapHeight = h;
+                    map_height_input.value = h;
                     map.height = h;
                     var mapCanvas = getMapCanvas();
                     var gridLayer = mapCanvas.getGridLayer();
@@ -898,6 +822,26 @@
                     });
                 }
                 return map;
+            },
+            set:function(m){
+                if(m != map){
+                    map = m;
+                    if(map.tilesets.length > 0){
+                        currentTileset = map.tilesets[0];
+                    }
+                    mapWidth = map.width;
+                    mapHeight = map.height;
+                    map_width_input.value = mapWidth;
+                    map_height_input.value = mapHeight;
+                    var mapCanvas = getMapCanvas();
+                    var gridLayer = mapCanvas.getGridLayer();
+                    gridLayer.grid.height = map.tileHeight * map.height;
+                    mapCanvas.minViewY = Math.min(-(map.tileHeight * map.height - mapCanvas.height), 0);
+                    gridLayer.grid.width = map.tileWidth * map.width;
+                    mapCanvas.minViewX = Math.min(-(map.tileWidth * map.width - mapCanvas.width), 0);
+                    gridLayer.refresh();
+                    draw_map(self);
+                }
             }
         });
 
@@ -1024,11 +968,6 @@
 
 
     function initialize_map() {
-        if (store.enabled && store.has("map")) {
-            var mapData = store.get("map");
-            map = MapEditor.parseMap(mapData);
-        }
-
         var mc = getMapCanvas();
         var layer = mc.getGridLayer();
         layer.grid = new AbstractGrid({
@@ -1043,10 +982,16 @@
         for (var i = 0; i < 10; i++) {
             layers[i] = mc.createLayer();
         }
-
-        MapEditor.mapWidth = 20;
-        MapEditor.mapHeight = 20;
         MapEditor.currentLayer = 0;
+        if (store.enabled && store.has('map')) {
+            var map_json = JSON.parse(store.get('map'));
+            MapEditor.map = SpritesetMap.fromJSON(map_json);
+            showLayers();
+        }
+        else{
+            MapEditor.mapWidth = 20;
+            MapEditor.mapHeight = 20;
+        }
     }
 
 
