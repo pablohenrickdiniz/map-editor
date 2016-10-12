@@ -40,6 +40,7 @@
             var tileset_cols = document.getElementById('tileset-cols');
             var camada = document.getElementById('camada');
             var export_button = document.getElementById('export');
+            var export_image_button = document.getElementById('export-image');
             var pencil_radio = document.getElementById('pencil-radio');
             var eraser_radio = document.getElementById('eraser-radio');
             var eyedropper_radio = document.getElementById('eyedropper-radio');
@@ -50,6 +51,7 @@
             var layer_checkbox =document.getElementById('show-layers');
 
             MapEditor.setEyedropperRadio(eyedropper_radio);
+            MapEditor.setExportImageButton(export_image_button);
             MapEditor.setPencilRadio(pencil_radio);
             MapEditor.setEraserRadio(eraser_radio);
             MapEditor.setExportButton(export_button);
@@ -87,7 +89,8 @@
             <h4>Ações</h4>
         </div>
         <div class="tool-content">
-            <button id="export">Exportar</button>
+            <button id="export">Raw</button>
+            <button id="export-image">Exportar Imagem</button>
             <button id="save">Salvar</button>
         </div>
     </div>
@@ -141,7 +144,7 @@
             </div>
             <div class="input-group">
                 <label for="">Mostrar Camadas</label>
-                <input type="checkbox" id="show-layers">
+                <input type="checkbox" id="show-layers" checked>
             </div>
             <div class="input-group">
                 <label for="">Mostrar Grade</label>

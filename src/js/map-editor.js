@@ -56,6 +56,7 @@
     var tileset_cols_input = null;
     var layer_input = null;
     var export_button = null;
+    var export_image_button = null;
     var save_button = null;
     var eraser_radio = null;
     var pencil_radio = null;
@@ -65,6 +66,7 @@
     var layer_checkbox = null;
     var grid_checkbox = null;
     var currentTileset = null;
+    var show_layers = true;
 
 
     var MapEditor = {
@@ -72,6 +74,15 @@
             initialize_tileset();
             initialize_map();
             initialize_collision_layer();
+        },
+        setExportImageButton: function (button) {
+            if (button.tagName == 'BUTTON') {
+                if (export_image_button !== null) {
+                    export_image_button.removeEventListener("click", export_image);
+                }
+                export_image_button = button;
+                export_image_button.addEventListener("click", export_image);
+            }
         },
         setExportButton: function (button) {
             if (button.tagName == 'BUTTON') {
@@ -213,8 +224,8 @@
     initialize(MapEditor);
 
     function save_callback() {
-        if(store.enabled){
-            store.set('map',JSON.stringify(map,json_replace));
+        if (store.enabled) {
+            store.set('map', JSON.stringify(map, json_replace));
         }
     }
 
@@ -277,10 +288,7 @@
 
     function layer_checkbox_callback() {
         var input = this;
-        var checked = input.checked;
-        if (checked) {
-            showLayers();
-        }
+        MapEditor.showLayers =  input.checked;
     }
 
 
@@ -411,6 +419,7 @@
             var tileHeight = image.height / rows;
             self.map.tileHeight = tileHeight;
             layer.grid.sh = tileHeight;
+            layer2.grid.height = tileHeight * self.map.height;
             layer2.grid.sh = tileHeight;
             collisionLayer.grid.sh = tileHeight;
             layer.refresh();
@@ -438,6 +447,7 @@
             var layer2 = getMapCanvas().getGridLayer();
             var tileWidth = image.width / val;
             layer.grid.sw = tileWidth;
+            layer2.grid.width = tileWidth * self.map.width;
             layer2.grid.sw = tileWidth;
             self.map.tileWidth = tileWidth;
             collisionLayer.grid.sw = tileWidth;
@@ -447,12 +457,33 @@
         }
     }
 
+    function export_image() {
+        var map = MapEditor.map;
+        var width = map.width * map.tileWidth;
+        var height = map.height * map.tileHeight;
+        var canvas = w.document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        for (var i in map.sprites) {
+            for (var j in map.sprites[i]) {
+                for (var k in map.sprites[i][j]) {
+                    if (map.sprites[i][j][k] instanceof Tile) {
+                        var tile = map.sprites[i][j][k];
+                        ctx.drawImage(tile.tileset.image, tile.sx, tile.sy, tile.width, tile.height,j * map.tileWidth, i * map.tileHeight, map.tileWidth, map.tileHeight);
+                    }
+                }
+            }
+        }
+        canvas.toBlob(function (blob) {
+            var url = URL.createObjectURL(blob);
+            w.open(url);
+        });
+    }
 
     function export_raw() {
         var string = JSON.stringify(map, json_replace);
         var blob = new Blob([string], {type: "application/json"});
-        console.log(blob);
-
         var url = w.URL.createObjectURL(blob);
         w.open(url);
         //var doc = w.document;
@@ -466,7 +497,10 @@
         //doc.body.removeChild(a);
     }
 
-
+    /**
+     *
+     * @returns {*}
+     */
     function getMapCanvas() {
         var self = MapEditor;
         if (mapCanvas === null) {
@@ -543,7 +577,7 @@
                 });
 
                 var element = document.getElementById('mouse');
-                element.innerHTML = x + ',' + y;
+                element.innerHTML = parseInt(x) + ',' + parseInt(y);
                 if (currentTileset != null) {
                     /*end hover square*/
                     switch (mode) {
@@ -578,11 +612,20 @@
         return mapCanvas;
     }
 
-
+    /**
+     *
+     * @returns {*}
+     */
     function getCurrentLayer() {
         return layers[currentLayer];
     }
 
+    /**
+     *
+     * @param tile
+     * @param i
+     * @param j
+     */
     function drawEyedropper(tile, i, j) {
         var layer = getCurrentLayer();
         var cm = getMapCanvas();
@@ -603,7 +646,13 @@
         map.set(i, j, currentLayer, tile);
     }
 
-
+    /**
+     *
+     * @param i
+     * @param j
+     * @param row
+     * @param col
+     */
     function drawTileMap(i, j, row, col) {
         var canvasMap = getMapCanvas();
         var x = j * map.tileWidth + canvasMap.viewX;
@@ -613,7 +662,9 @@
         var tile = tileset.get(row, col);
         var tile_data = Object.assign({
             dx: x,
-            dy: y
+            dy: y,
+            dWidth:map.tileWidth,
+            dHeight:map.tileHeight
         }, tile.toOBJ());
 
         var layer = getCurrentLayer();
@@ -659,20 +710,25 @@
         }
     }
 
+    /**
+     *
+     * @param i
+     * @param j
+     */
     function deleteTile(i, j) {
         var layer = layers[currentLayer];
         var canvasMap = getMapCanvas();
         var x = j * map.tileWidth + canvasMap.viewX;
         var y = i * map.tileHeight + canvasMap.viewY;
-
-
         layer.clear(x, y, map.tileWidth, map.tileHeight);
         map.unset(i, j, currentLayer);
     }
 
-
+    /**
+     *
+     * @returns {*}
+     */
     function getTilesetCanvas() {
-        var self = MapEditor;
         if (tilesetCanvas === null) {
             var container = document.getElementById('tileset');
             tilesetCanvas = new CanvasEngineGrid(container, {
@@ -748,7 +804,10 @@
         return tilesetCanvas;
     }
 
-
+    /**
+     *
+     * @param tool
+     */
     function selectTool(tool) {
         selectedTool = tool;
     }
@@ -756,6 +815,12 @@
     function showLayers() {
         layers.forEach(function (layer) {
             layer.opacity = 1;
+        });
+    }
+
+    function hideLayers(){
+        layers.forEach(function (layer,index) {
+            layer.opacity = index == currentLayer?1:0.5;
         });
     }
 
@@ -769,7 +834,10 @@
         layer.opacity = 0;
     }
 
-
+    /**
+     *
+     * @param self
+     */
     function initialize(self) {
         Object.defineProperty(self, 'mapWidth', {
             get: function () {
@@ -823,10 +891,10 @@
                 }
                 return map;
             },
-            set:function(m){
-                if(m != map){
+            set: function (m) {
+                if (m != map) {
                     map = m;
-                    if(map.tilesets.length > 0){
+                    if (map.tilesets.length > 0) {
                         currentTileset = map.tilesets[0];
                     }
                     mapWidth = map.width;
@@ -852,9 +920,11 @@
             set: function (cl) {
                 if (currentLayer != cl) {
                     currentLayer = cl;
-                    layers.forEach(function (layer, index) {
-                        layer.opacity = index === cl ? 1 : 0.3;
-                    });
+                    if(!show_layers){
+                        layers.forEach(function (layer, index) {
+                            layer.opacity = index === cl ? 1 : 0.3;
+                        });
+                    }
                 }
             }
         });
@@ -874,9 +944,45 @@
                             state: 0
                         });
                         layer.refresh();
+                        layers.forEach(function(layer){
+                            layer.opacity = 0.5;
+                        });
+                        layer_checkbox.disabled = true;
+                        layer_input.disabled = true;
+                        pencil_radio.disabled = true;
+                        eraser_radio.disabled = true;
+                        eyedropper_radio.disabled = true;
                     }
                     else {
+                        if(show_layers){
+                            showLayers();
+                        }
+                        else{
+                            hideLayers();
+                        }
                         collisionLayer.opacity = 0;
+                        layer_checkbox.disabled = false;
+                        layer_input.disabled = false;
+                        pencil_radio.disabled = false;
+                        eraser_radio.disabled = false;
+                        eyedropper_radio.disabled = false;
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'showLayers',{
+            get:function(){
+                return show_layers;
+            },
+            set:function(sl){
+                if(sl != show_layers){
+                    show_layers = sl;
+                    if(show_layers){
+                        showLayers();
+                    }
+                    else{
+                        hideLayers();
                     }
                 }
             }
@@ -915,11 +1021,6 @@
     }
 
 
-    /**
-     *
-     * @param map
-     * @param editor
-     */
     function draw_map() {
         var length = layers.length;
         var i;
@@ -955,7 +1056,9 @@
 
                                 var tile_data = Object.assign({
                                     dx: dx,
-                                    dy: dy
+                                    dy: dy,
+                                    dWidth:map.tileWidth,
+                                    dHeight:map.tileHeight
                                 }, tile.toOBJ());
                                 layer.image(tileset.image, tile_data);
                             }
@@ -968,30 +1071,33 @@
 
 
     function initialize_map() {
-        var mc = getMapCanvas();
-        var layer = mc.getGridLayer();
-        layer.grid = new AbstractGrid({
-            sw: 32,
-            sh: 32,
-            width: mc.width,
-            height: mc.height,
-            parent: layer
-        });
-        layer.opacity = 0.5;
-
-        for (var i = 0; i < 10; i++) {
-            layers[i] = mc.createLayer();
-        }
         MapEditor.currentLayer = 0;
         if (store.enabled && store.has('map')) {
             var map_json = JSON.parse(store.get('map'));
             MapEditor.map = SpritesetMap.fromJSON(map_json);
             showLayers();
         }
-        else{
+        else {
             MapEditor.mapWidth = 20;
             MapEditor.mapHeight = 20;
         }
+
+        var mc = getMapCanvas();
+        for (var i = 0; i < 10; i++) {
+            layers[i] = mc.createLayer();
+        }
+
+        var layer = mc.getGridLayer();
+        layer.grid = new AbstractGrid({
+            sw: MapEditor.map.tileWidth,
+            sh: MapEditor.map.tileHeight,
+            width: MapEditor.map.width * MapEditor.map.tileWidth,
+            height: MapEditor.map.height * MapEditor.map.tileHeight,
+            parent: layer
+        });
+        layer.opacity = 0.5;
+        layer.refresh();
+        draw_map();
     }
 
 

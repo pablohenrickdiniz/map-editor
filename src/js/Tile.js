@@ -38,9 +38,7 @@
             sx:self.sx,
             sy:self.sy,
             sWidth:self.width,
-            sHeight:self.height,
-            dWidth:self.width,
-            dHeight:self.height
+            sHeight:self.height
         };
     };
 

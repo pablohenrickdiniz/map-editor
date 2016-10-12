@@ -120,7 +120,7 @@
     SpritesetMap.prototype.toJSON = function(){
         var self = this;
         return [
-            self.tilesets, //tilesets
+            get_used_tilesets(self.sprites), //tilesets
             self.sprites,  //sprites
             self.width,    //width
             self.height,   //height
@@ -144,6 +144,7 @@
             tilesets[i] = tileset;
         }
 
+
         var sprites = json[1];
         var width = parseFloat(json[2]);
         var height = parseFloat(json[3]);
@@ -152,12 +153,12 @@
 
 
         var map = new SpritesetMap({
-            tilesets:tilesets,
             width:width,
             height:height,
             tileWidth:tileWidth,
             tileHeight:tileHeight
         });
+
 
         for(i in sprites){
             for(j in sprites[i]){
@@ -172,8 +173,41 @@
             }
         }
 
+        var used_tilesets = get_used_tilesets(map.sprites);
+        while(used_tilesets.length > 0){
+            map.addTileset(used_tilesets.pop());
+        }
+
         return map;
     };
+
+    /**
+     *
+     * @param sprites
+     * @returns {Array}
+     */
+    function get_used_tilesets(sprites){
+        var tilesets = [];
+        var i;
+        var j;
+        var k;
+
+        for(i in sprites){
+            for(j in sprites[i]){
+                for(k in sprites[i][j]){
+                    var tile = sprites[i][j][k];
+                    if(tile instanceof Tile){
+                        var index = tilesets.indexOf(tile.tileset);
+                        if(index == -1){
+                            tile.tileset.id = tilesets.length;
+                            tilesets.push(tile.tileset);
+                        }
+                    }
+                }
+            }
+        }
+        return tilesets;
+    }
 
     root.SpritesetMap = SpritesetMap;
 })(window);

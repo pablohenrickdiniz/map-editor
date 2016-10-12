@@ -80,6 +80,13 @@ input[type=radio]:checked:after{
     border-radius: 50%;
 }
 
+input[type=radio]:disabled{
+    opacity:0.5;
+    -moz-opacity:0.5;;
+    -webkit-opacity:0.5;;
+    -ms-opacity:0.5;;
+}
+
 input[type=number],input[type=text],select{
     border-top:1px solid #666666;
     border-right:1px solid #666666;
