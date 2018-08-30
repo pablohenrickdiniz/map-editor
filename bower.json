@@ -20,6 +20,7 @@
     "math-lib": "git@github.com:pablohenrickdiniz/math-lib.git",
     "Mouse": "git@github.com:pablohenrickdiniz/Mouse.git",
     "Keyboard": "git@github.com:pablohenrickdiniz/Keyboard.git",
-    "rpg-engine": "git@github.com:pablohenrickdiniz/rpg-engine.git"
+    "rpg-engine": "git@github.com:pablohenrickdiniz/rpg-engine.git",
+    "store-js": "^2.0.12"
   }
 }
