@@ -32,45 +32,44 @@
         throw "MapEditor requires Tileset";
     }
 
-
-    var img_types = [
+    let img_types = [
         'image/png',
         'image/jpeg',
         'image/gif'
     ];
-    var mapCanvas = null;
-    var tilesetCanvas = null;
-    var tilesetLayer = null;
-    var selectedInterval = null;
-    var collisionLayer = null;
-    var layers = [];
-    var map = null;
-    var currentLayer = null;
-    var mode = 'map';
-    var mapWidth = null;
-    var mapHeight = null;
-    var selectedTool = 'pencil';
-    var tilesetInput = null;
-    var map_width_input = null;
-    var map_height_input = null;
-    var tileset_rows_input = null;
-    var tileset_cols_input = null;
-    var layer_input = null;
-    var export_button = null;
-    var export_image_button = null;
-    var save_button = null;
-    var eraser_radio = null;
-    var pencil_radio = null;
-    var eyedropper_radio = null;
-    var collision_radio = null;
-    var map_radio = null;
-    var layer_checkbox = null;
-    var grid_checkbox = null;
-    var currentTileset = null;
-    var show_layers = true;
+    let mapCanvas = null;
+    let tilesetCanvas = null;
+    let tilesetLayer = null;
+    let selectedInterval = null;
+    let collisionLayer = null;
+    let layers = [];
+    let map = null;
+    let currentLayer = null;
+    let mode = 'map';
+    let mapWidth = null;
+    let mapHeight = null;
+    let selectedTool = 'pencil';
+    let tilesetInput = null;
+    let map_width_input = null;
+    let map_height_input = null;
+    let tileset_rows_input = null;
+    let tileset_cols_input = null;
+    let layer_input = null;
+    let export_button = null;
+    let export_image_button = null;
+    let save_button = null;
+    let eraser_radio = null;
+    let pencil_radio = null;
+    let eyedropper_radio = null;
+    let collision_radio = null;
+    let map_radio = null;
+    let layer_checkbox = null;
+    let grid_checkbox = null;
+    let currentTileset = null;
+    let show_layers = true;
 
 
-    var MapEditor = {
+    let MapEditor = {
         initialize: function () {
             initialize_tileset();
             initialize_map();
@@ -303,8 +302,8 @@
      * @returns {*}
      */
     function find_tileset(image_data_url, tilesets) {
-        var length = tilesets.length;
-        for (var i = 0; i < length; i++) {
+        let length = tilesets.length;
+        for (let i = 0; i < length; i++) {
             if (tilesets[i].image.src === image_data_url) {
                 return tilesets[i];
             }
@@ -318,13 +317,13 @@
      * @param tileset
      */
     function changeTileset(tileset) {
-        var self = MapEditor;
+        let self = MapEditor;
         Graphic_Loader.load(tileset, 0, {
             onsuccess: function (id,img) {
-                var src = img.src;
-                var tileset = find_tileset(src, self.map.tilesets);
-                var rows = Math.floor(img.height / 32);
-                var cols = Math.floor(img.width / 32);
+                let src = img.src;
+                let tileset = find_tileset(src, self.map.tilesets);
+                let rows = Math.floor(img.height / 32);
+                let cols = Math.floor(img.width / 32);
                 if (tileset == null) {
                     tileset = new Tileset({
                         image: img,
@@ -348,12 +347,12 @@
      * @param editor
      */
     function load_tileset_canvas(editor) {
-        var tileset = currentTileset;
-        var img = tileset.image;
-        var cols = tileset.cols;
-        var rows = tileset.rows;
-        var tileset_canvas = getTilesetCanvas();
-        var tileset_grid_layer = tileset_canvas.getGridLayer();
+        let tileset = currentTileset;
+        let img = tileset.image;
+        let cols = tileset.cols;
+        let rows = tileset.rows;
+        let tileset_canvas = getTilesetCanvas();
+        let tileset_grid_layer = tileset_canvas.getGridLayer();
         tileset_canvas.viewX = 0;
         tileset_canvas.viewY = 0;
         tileset_grid_layer.grid.width = img.width;
@@ -361,13 +360,13 @@
         tileset_grid_layer.grid.sw = img.width / cols;
         tileset_grid_layer.grid.sh = img.height / rows;
 
-        var collision_grid = collisionLayer.grid;
+        let collision_grid = collisionLayer.grid;
         collision_grid.width = img.width;
         collision_grid.height = img.height;
         collision_grid.sw = img.width / tileset.cols;
         collision_grid.sh = img.height / tileset.rows;
-        var i;
-        var j;
+        let i;
+        let j;
 
         for (i in tileset.collision) {
             for (j in tileset.collision[i]) {
@@ -400,9 +399,9 @@
      * @param rows
      */
     function changeRows(rows) {
-        var self = MapEditor;
-        var image = null;
-        var tileset = currentTileset;
+        let self = MapEditor;
+        let image = null;
+        let tileset = currentTileset;
         if (tileset != null) {
             tileset.rows = rows;
             image = tileset.image;
@@ -410,9 +409,9 @@
 
         tileset_rows_input.value = rows;
         if (image !== null) {
-            var layer = getTilesetCanvas().getGridLayer();
-            var layer2 = getMapCanvas().getGridLayer();
-            var tileHeight = image.height / rows;
+            let layer = getTilesetCanvas().getGridLayer();
+            let layer2 = getMapCanvas().getGridLayer();
+            let tileHeight = image.height / rows;
             self.map.tileHeight = tileHeight;
             layer.grid.sh = tileHeight;
             layer2.grid.height = tileHeight * self.map.height;
@@ -429,9 +428,9 @@
      * @param val
      */
     function changeCols(val) {
-        var self = MapEditor;
-        var image = null;
-        var tileset = currentTileset;
+        let self = MapEditor;
+        let image = null;
+        let tileset = currentTileset;
         if (tileset != null) {
             image = tileset.image;
             tileset.cols = val;
@@ -439,9 +438,9 @@
 
         tileset_cols_input.value = val;
         if (image !== null) {
-            var layer = getTilesetCanvas().getGridLayer();
-            var layer2 = getMapCanvas().getGridLayer();
-            var tileWidth = image.width / val;
+            let layer = getTilesetCanvas().getGridLayer();
+            let layer2 = getMapCanvas().getGridLayer();
+            let tileWidth = image.width / val;
             layer.grid.sw = tileWidth;
             layer2.grid.width = tileWidth * self.map.width;
             layer2.grid.sw = tileWidth;
@@ -454,33 +453,33 @@
     }
 
     function export_image() {
-        var map = MapEditor.map;
-        var width = map.width * map.tileWidth;
-        var height = map.height * map.tileHeight;
-        var canvas = w.document.createElement('canvas');
+        let map = MapEditor.map;
+        let width = map.width * map.tileWidth;
+        let height = map.height * map.tileHeight;
+        let canvas = w.document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        var ctx = canvas.getContext('2d');
-        for (var i in map.sprites) {
-            for (var j in map.sprites[i]) {
-                for (var k in map.sprites[i][j]) {
+        let ctx = canvas.getContext('2d');
+        for (let i in map.sprites) {
+            for (let j in map.sprites[i]) {
+                for (let k in map.sprites[i][j]) {
                     if (map.sprites[i][j][k] instanceof Tile) {
-                        var tile = map.sprites[i][j][k];
+                        let tile = map.sprites[i][j][k];
                         ctx.drawImage(tile.tileset.image, tile.sx, tile.sy, tile.width, tile.height,j * map.tileWidth, i * map.tileHeight, map.tileWidth, map.tileHeight);
                     }
                 }
             }
         }
         canvas.toBlob(function (blob) {
-            var url = URL.createObjectURL(blob);
+            let url = URL.createObjectURL(blob);
             w.open(url);
         });
     }
 
     function export_raw() {
-        var string = JSON.stringify(map, json_replace);
-        var blob = new Blob([string], {type: "application/json"});
-        var url = w.URL.createObjectURL(blob);
+        let string = JSON.stringify(map, json_replace);
+        let blob = new Blob([string], {type: "application/json"});
+        let url = w.URL.createObjectURL(blob);
         w.open(url,'__blank');
     }
 
@@ -489,9 +488,9 @@
      * @returns {*}
      */
     function getMapCanvas() {
-        var self = MapEditor;
+        let self = MapEditor;
         if (mapCanvas === null) {
-            var container = document.getElementById('canvas-map');
+            let container = document.getElementById('canvas-map');
             mapCanvas = new CanvasEngineGrid(container, {
                 width: 600,
                 height: 500,
@@ -499,23 +498,23 @@
                 selectable: true
             });
 
-            var reader = mapCanvas.getMouseReader();
+            let reader = mapCanvas.getMouseReader();
 
 
             reader.addEventListener('mousedown', function (x, y) {
                 if (reader.left && currentTileset != null) {
-                    var mapCanvas = getMapCanvas();
-                    var map = self.map;
-                    var pos = get_position(mapCanvas, {x: x, y: y});
-                    var i = Math.floor(pos.y / map.tileHeight);
-                    var j = Math.floor(pos.x / map.tileWidth);
-                    var tile;
+                    let mapCanvas = getMapCanvas();
+                    let map = self.map;
+                    let pos = get_position(mapCanvas, {x: x, y: y});
+                    let i = Math.floor(pos.y / map.tileHeight);
+                    let j = Math.floor(pos.x / map.tileWidth);
+                    let tile;
                     if (i < map.height && j < map.width) {
                         switch (self.mode) {
                             case 'map':
                                 switch (selectedTool) {
                                     case 'pencil':
-                                        var interval = selectedInterval;
+                                        let interval = selectedInterval;
                                         if (interval !== null) {
                                             if (interval.type === 'eyedropper') {
                                                 tile = interval.tile;
@@ -545,25 +544,25 @@
             });
 
             mapCanvas.addEventListener('viewChange', function (x, y) {
-                var grid_layer = mapCanvas.getGridLayer();
+                let grid_layer = mapCanvas.getGridLayer();
                 draw_map(self);
                 grid_layer.refresh();
-                var element = document.getElementById('view');
+                let element = document.getElementById('view');
                 x = Math.abs(x);
                 y = Math.abs(y);
                 element.innerHTML = x + ',' + y;
             });
 
             reader.addEventListener('mousemove', function (x, y) {
-                var reader = this;
+                let reader = this;
                 /*start hover square*/
-                var mapCanvas = getMapCanvas();
-                var pos = get_position(mapCanvas, {
+                let mapCanvas = getMapCanvas();
+                let pos = get_position(mapCanvas, {
                     x: x,
                     y: y
                 });
 
-                var element = document.getElementById('mouse');
+                let element = document.getElementById('mouse');
                 element.innerHTML = parseInt(x) + ',' + parseInt(y);
                 if (currentTileset != null) {
                     /*end hover square*/
@@ -575,7 +574,7 @@
                                         drawTile();
                                         break;
                                     case 'eraser':
-                                        var area_interval = get_area_interval({
+                                        let area_interval = get_area_interval({
                                             x: pos.x,
                                             y: pos.y,
                                             width: 1,
@@ -583,7 +582,7 @@
                                             tileWidth: map.tileWidth,
                                             tileHeight: map.tileHeight
                                         });
-                                        var i, j;
+                                        let i, j;
                                         for (i = area_interval.si; i < area_interval.ei; i++) {
                                             for (j = area_interval.sj; j < area_interval.ej; j++) {
                                                 deleteTile(i, j);
@@ -614,10 +613,10 @@
      * @param j
      */
     function drawEyedropper(tile, i, j) {
-        var layer = getCurrentLayer();
-        var cm = getMapCanvas();
-        var dx = j * map.tileWidth + cm.viewX;
-        var dy = i * map.tileHeight + cm.viewY;
+        let layer = getCurrentLayer();
+        let cm = getMapCanvas();
+        let dx = j * map.tileWidth + cm.viewX;
+        let dy = i * map.tileHeight + cm.viewY;
 
         layer.clear({
             x: tile.dx,
@@ -627,8 +626,8 @@
         });
 
 
-        var tile_data = Object.assign({dx: dx, dy: dy}, tile.toOBJ());
-        var tileset = tile.tileset;
+        let tile_data = Object.assign({dx: dx, dy: dy}, tile.toOBJ());
+        let tileset = tile.tileset;
         layer.image(tileset.image, tile_data);
         map.set(i, j, currentLayer, tile);
     }
@@ -641,20 +640,20 @@
      * @param col
      */
     function drawTileMap(i, j, row, col) {
-        var canvasMap = getMapCanvas();
-        var x = j * map.tileWidth + canvasMap.viewX;
-        var y = i * map.tileHeight + canvasMap.viewY;
-        var tileset = currentTileset;
+        let canvasMap = getMapCanvas();
+        let x = j * map.tileWidth + canvasMap.viewX;
+        let y = i * map.tileHeight + canvasMap.viewY;
+        let tileset = currentTileset;
 
-        var tile = tileset.get(row, col);
-        var tile_data = Object.assign({
+        let tile = tileset.get(row, col);
+        let tile_data = Object.assign({
             dx: x,
             dy: y,
             dWidth:map.tileWidth,
             dHeight:map.tileHeight
         }, tile.toOBJ());
 
-        var layer = getCurrentLayer();
+        let layer = getCurrentLayer();
         layer.clear(x, y, map.tileWidth, map.tileHeight);
         layer.image(tileset.image, tile_data);
         map.set(i, j, currentLayer, tile);
@@ -663,15 +662,15 @@
 
     function drawTile() {
         if (selectedInterval !== null && currentTileset != null) {
-            var mc = getMapCanvas();
-            var interval = selectedInterval;
-            var area = mc.getDrawedArea();
+            let mc = getMapCanvas();
+            let interval = selectedInterval;
+            let area = mc.getDrawedArea();
             area.tileWidth = map.tileWidth;
             area.tileHeight = map.tileHeight;
-            var area_interval = get_area_interval(area);
-            var i, j;
+            let area_interval = get_area_interval(area);
+            let i, j;
             if (interval.type === 'eyedropper') {
-                var tile = interval.tile;
+                let tile = interval.tile;
                 for (i = area_interval.si; i < area_interval.ei && i < map.height; i++) {
                     for (j = area_interval.sj; j < area_interval.ej && j < map.width; j++) {
                         drawEyedropper(tile, i, j);
@@ -679,7 +678,7 @@
                 }
             }
             else {
-                var row, col;
+                let row, col;
                 for (i = area_interval.si, row = interval.si; i < area_interval.ei && i < map.height; i++) {
                     for (j = area_interval.sj, col = interval.sj; j < area_interval.ej && j < map.width; j++) {
                         drawTileMap(i, j, row, col);
@@ -703,10 +702,10 @@
      * @param j
      */
     function deleteTile(i, j) {
-        var layer = layers[currentLayer];
-        var canvasMap = getMapCanvas();
-        var x = j * map.tileWidth + canvasMap.viewX;
-        var y = i * map.tileHeight + canvasMap.viewY;
+        let layer = layers[currentLayer];
+        let canvasMap = getMapCanvas();
+        let x = j * map.tileWidth + canvasMap.viewX;
+        let y = i * map.tileHeight + canvasMap.viewY;
         layer.clear(x, y, map.tileWidth, map.tileHeight);
         map.unset(i, j, currentLayer);
     }
@@ -717,7 +716,7 @@
      */
     function getTilesetCanvas() {
         if (tilesetCanvas === null) {
-            var container = document.getElementById('tileset');
+            let container = document.getElementById('tileset');
             tilesetCanvas = new CanvasEngineGrid(container, {
                 container: container,
                 width: 600,
@@ -727,26 +726,24 @@
                 multiSelect: true
             });
 
-            var reader = tilesetCanvas.getMouseReader();
-
+            let reader = tilesetCanvas.getMouseReader();
 
             reader.addEventListener('mousedown', function (x, y, e) {
-                if (mode == 'collision' && e.which == 1) {
-                    var grid = collisionLayer.grid;
-                    var i = Math.floor((y - tilesetCanvas.viewY) / grid.sh);
-                    var j = Math.floor((x - tilesetCanvas.viewX) / grid.sw);
-                    var rect = grid.get(i, j);
+                if (mode === 'collision' && e.which === 1) {
+                    let grid = collisionLayer.grid;
+                    let i = Math.floor((y - tilesetCanvas.viewY) / grid.sh);
+                    let j = Math.floor((x - tilesetCanvas.viewX) / grid.sw);
+                    let rect = grid.get(i, j);
                     if (rect != null) {
                         rect.state = !rect.state;
-                        var tileset = currentTileset;
-                        tileset.setCollision(i, j, rect.state);
+                        currentTileset.setCollision(i, j, rect.state);
                         collisionLayer.refresh();
                     }
                 }
             });
 
             tilesetCanvas.addEventListener('viewChange', function (x, y) {
-                var tileset = currentTileset;
+                let tileset = currentTileset;
                 tilesetLayer.clear();
                 tilesetLayer.drawImage(tileset.image, x, y);
                 collisionLayer.refresh();
@@ -754,10 +751,10 @@
             });
 
             tilesetCanvas.addEventListener('areaselect', function (area, grid) {
-                if (mode == 'map') {
+                if (mode === 'map') {
                     if (reader.left) {
-                        var rectSets = grid.getRectsFromArea(area);
-                        var interval = grid.getAreaInterval(area);
+                        let rectSets = grid.getRectsFromArea(area);
+                        let interval = grid.getAreaInterval(area);
                         grid.apply({
                             fillStyle: 'transparent',
                             state: 0
@@ -771,13 +768,13 @@
                         selectedInterval = interval;
                     }
                     else {
-                        var rects = grid.getRectsFromArea(area);
+                        let rects = grid.getRectsFromArea(area);
                         if (rects.length > 0) {
-                            var rectSet = rects[0];
+                            let rectSet = rects[0];
                             grid.apply({
                                 fillStyle: 'transparent'
                             }, function () {
-                                return this.state != 1;
+                                return this.state !== 1;
                             });
                             rectSet.set({
                                 fillStyle: 'rgba(0,0,100,0.5)'
@@ -807,17 +804,17 @@
 
     function hideLayers(){
         layers.forEach(function (layer,index) {
-            layer.opacity = index == currentLayer?1:0.5;
+            layer.opacity = index === currentLayer?1:0.5;
         });
     }
 
     function showGrid() {
-        var layer = getMapCanvas().getGridLayer();
+        let layer = getMapCanvas().getGridLayer();
         layer.opacity = 0.5;
     }
 
     function hideGrid() {
-        var layer = getMapCanvas().getGridLayer();
+        let layer = getMapCanvas().getGridLayer();
         layer.opacity = 0;
     }
 
@@ -827,17 +824,25 @@
      */
     function initialize(self) {
         Object.defineProperty(self, 'mapWidth', {
+            /**
+             *
+             * @returns {*}
+             */
             get: function () {
                 return mapWidth;
             },
+            /**
+             *
+             * @param w
+             */
             set: function (w) {
-                if (w != mapWidth) {
+                if (w !== mapWidth) {
                     mapWidth = w;
                     map_width_input.value = w;
-                    var map = self.map;
+                    let map = self.map;
                     map.width = w;
-                    var mapCanvas = getMapCanvas();
-                    var gridLayer = mapCanvas.getGridLayer();
+                    let mapCanvas = getMapCanvas();
+                    let gridLayer = mapCanvas.getGridLayer();
                     gridLayer.grid.width = map.tileWidth * w;
                     mapCanvas.minViewX = Math.min(-(map.tileWidth * w - mapCanvas.width), 0);
                     gridLayer.refresh();
@@ -847,17 +852,25 @@
         });
 
         Object.defineProperty(self, 'mapHeight', {
+            /**
+             *
+             * @returns {*}
+             */
             get: function () {
                 return mapHeight;
             },
+            /**
+             *
+             * @param h
+             */
             set: function (h) {
-                if (h != mapHeight) {
-                    var map = self.map;
+                if (h !== mapHeight) {
+                    let map = self.map;
                     mapHeight = h;
                     map_height_input.value = h;
                     map.height = h;
-                    var mapCanvas = getMapCanvas();
-                    var gridLayer = mapCanvas.getGridLayer();
+                    let mapCanvas = getMapCanvas();
+                    let gridLayer = mapCanvas.getGridLayer();
                     gridLayer.grid.height = map.tileHeight * h;
                     mapCanvas.minViewY = Math.min(-(map.tileHeight * h - mapCanvas.height), 0);
                     gridLayer.refresh();
@@ -1042,18 +1055,18 @@
 
 
     function draw_map() {
-        var length = layers.length;
-        var i;
-        var j;
-        var k;
+        let length = layers.length;
+        let i;
+        let j;
+        let k;
 
         for (i = 0; i < length; i++) {
             layers[i].clear();
         }
 
-        var mapCanvas = getMapCanvas();
-        var grid_layer = mapCanvas.getGridLayer();
-        var interval = get_area_interval({
+        let mapCanvas = getMapCanvas();
+        let grid_layer = mapCanvas.getGridLayer();
+        let interval = get_area_interval({
             x: -mapCanvas.viewX,
             y: -mapCanvas.viewY,
             width: Math.min(grid_layer.grid.width, mapCanvas.width),

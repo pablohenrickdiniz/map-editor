@@ -1,11 +1,12 @@
+'use strict';
 (function (root) {
     /**
      *
      * @param options
      * @constructor
      */
-    var Tile = function (options) {
-        var self = this;
+    let Tile = function (options) {
+        let self = this;
         initialize(self);
         options = options || {};
         self.i = options.i || 0;
@@ -18,7 +19,7 @@
      * @returns {*[]}
      */
     Tile.prototype.toJSON = function(){
-        var self = this;
+        let self = this;
         return [
             self.tileset?self.tileset.id:null, //tileset
             self.i,                            //sx
@@ -32,7 +33,7 @@
      * @returns {{tileset: (options.id|*|id|SpritesetMap.tilesets.id|Tileset.id|Section.id), sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (options.width|*|number), sHeight: (options.height|*|number), dWidth: *, dHeight: *}}
      */
     Tile.prototype.toOBJ = function(){
-        var self = this;
+        let self = this;
         return {
             tileset:self.tileset?self.tileset.id:null,
             sx:self.sx,
@@ -42,7 +43,7 @@
         };
     };
 
-    var initialize = function(self){
+    let initialize = function(self){
         Object.defineProperty(self,'sx',{
             get:function(){
                 return self.j*self.tileset.tileWidth;
@@ -67,7 +68,6 @@
             }
         });
     };
-
 
     root.Tile = Tile;
 })(window);

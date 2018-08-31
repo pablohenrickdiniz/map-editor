@@ -1,8 +1,15 @@
+'use strict';
 (function(w){
     w.EditorUtils = {
         canvas: null,
+        /**
+         *
+         * @param width
+         * @param height
+         * @returns {HTMLCanvasElement | *}
+         */
         getCanvas: function (width, height) {
-            var self = this;
+            let self = this;
             if (self.canvas === null) {
                 self.canvas = document.createElement('canvas');
             }
@@ -10,31 +17,42 @@
             self.canvas.height = height;
             return self.canvas;
         },
+        /**
+         *
+         * @param img
+         * @param x
+         * @param y
+         * @returns {boolean}
+         */
         isPixelTransparent: function (img, x, y) {
-            var self = this;
+            let self = this;
             if (x >= 0 && y >= 0) {
-                var canvas = self.getCanvas(1, 1);
-                var ctx = canvas.getContext('2d');
+                let canvas = self.getCanvas(1, 1);
+                let ctx = canvas.getContext('2d');
 
                 ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1);
-                var p = ctx.getImageData(0, 0, 1, 1).data;
+                let p = ctx.getImageData(0, 0, 1, 1).data;
                 return p[3] === undefined || p[3] === 0;
             }
 
             return true;
         },
+        /**
+         *
+         * @param img
+         * @param bounds
+         * @returns {{x: number, y: number, width: number, height: number}}
+         */
         getTrimmedBounds: function (img, bounds) {
-            var self = this;
-            var width = bounds.dWidth;
-            var height = bounds.dHeight;
-            var sx = bounds.sx;
-            var sy = bounds.sy;
-            var canvas = self.getCanvas(width, height);
-            var ctx = canvas.getContext('2d');
-
+            let self = this;
+            let width = bounds.dWidth;
+            let height = bounds.dHeight;
+            let sx = bounds.sx;
+            let sy = bounds.sy;
+            let canvas = self.getCanvas(width, height);
+            let ctx = canvas.getContext('2d');
             ctx.drawImage(img, sx, sy, width, height, 0, 0, width, height);
-
-            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height), l = pixels.data.length, i,
+            let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height), l = pixels.data.length, i,
                 bound = {
                     top: null,
                     left: null,
@@ -72,7 +90,7 @@
                 }
             }
 
-            var trimHeight = bound.bottom - bound.top,
+            let trimHeight = bound.bottom - bound.top,
                 trimWidth = bound.right - bound.left;
 
 
